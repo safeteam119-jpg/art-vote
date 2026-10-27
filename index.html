@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <base target="_top">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🎨 매장 그림 컨테스트 투표</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: 'Pretendard', 'Malgun Gothic', -apple-system, sans-serif;
-      background-color: #f4f5f8; color: #1a1f2b; margin: 0; padding: 15px;
+      background-color: #f4f5f8; color: #1a1f2b; margin: 0; padding: 12px;
       line-height: 1.5; -webkit-font-smoothing: antialiased;
     }
     body::before {
@@ -19,152 +20,146 @@
     h1, h2, h3 { margin: 0; letter-spacing: -.02em; }
     button { font-family: inherit; padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 700; transition: all .2s cubic-bezier(.22,.61,.36,1); }
 
-    /* ================= 로그인 ================= */
+    /* 로그인: 모바일에서 화면 중앙 쪾으로 내려오도록 상단 여백을 화면 높이에 비례해서 줌 */
     #loginScreen {
-      max-width: 90%; width: 420px; margin: 60px auto; background: white;
+      max-width: 100%; width: 420px; margin: clamp(36px, 11vh, 90px) auto 40px; background: white;
       border-radius: 24px; box-shadow: 0 20px 50px rgba(20,25,40,.12);
       text-align: center; overflow: hidden; animation: popIn .5s cubic-bezier(.22,.61,.36,1);
     }
-    .login-hero {
-      background: linear-gradient(135deg, #e50020, #c0001b); padding: 40px 30px 46px;
-      color: #fff; position: relative; overflow: hidden;
-    }
+    @media (min-width: 600px) { #loginScreen { margin: 60px auto; } }
+    .login-hero { background: linear-gradient(135deg, #e50020, #c0001b); padding: 36px 26px 42px; color: #fff; position: relative; overflow: hidden; }
     .login-hero::after { content: '🎨'; position: absolute; right: -16px; bottom: -24px; font-size: 120px; opacity: .14; transform: rotate(-12deg); }
-    .login-hero h2 { font-size: 1.45em; line-height: 1.35; margin-bottom: 10px; }
+    .login-hero h2 { font-size: 1.4em; line-height: 1.35; margin-bottom: 10px; }
     .login-hero p { font-size: 0.9em; opacity: .92; margin: 0; }
-    .login-body { padding: 28px; }
+    .login-body { padding: 24px; }
     input[type="text"] {
       width: 100%; padding: 14px 16px; margin: 8px 0; border: 1.6px solid #eceef2;
-      border-radius: 13px; font-size: 16px; background-color: #fafbfc;
-      transition: all .18s ease; font-family: inherit;
+      border-radius: 13px; font-size: 16px; background-color: #fafbfc; transition: all .18s ease; font-family: inherit;
     }
     input[type="text"]:focus { outline: none; border-color: #e50020; background-color: white; box-shadow: 0 0 0 4px rgba(229,0,32,.1); }
     .btn-primary { background: linear-gradient(135deg, #e50020, #c0001b); color: white; width: 100%; margin-top: 16px; padding: 15px; box-shadow: 0 8px 20px rgba(229,0,32,.28); }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(229,0,32,.34); }
-    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:active { transform: translateY(1px); }
 
-    /* ================= 메인 ================= */
+    /* 메뉴(첫 화면): 모바일에서 화면 중앙 쪽으로 내려오도록 */
+    #menuScreen { display: none; max-width: 460px; margin: 0 auto; padding-top: clamp(24px, 9vh, 80px); }
+    @media (min-width: 600px) { #menuScreen { padding-top: 10px; } }
+    #menuUserInfo { text-align: center; color: #8b94a3; font-size: 0.85em; font-weight: 600; margin-bottom: 14px; }
+    .menu-desc { text-align: center; color: #5b6472; font-size: 0.95em; line-height: 1.6; margin: 0 0 26px; }
+    .menu-btn {
+      width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border: none; border-radius: 20px; margin-bottom: 16px; cursor: pointer;
+      color: #fff; box-shadow: 0 10px 24px rgba(20,25,40,.12); transition: transform .15s ease;
+    }
+    .menu-btn:active { transform: scale(0.98); }
+    /* 투표하기: 전체 출품작 보기 버튼보다 약 2배 크게 */
+    .menu-btn-vote {
+      background: linear-gradient(135deg, #e50020, #c0001b); box-shadow: 0 14px 32px rgba(229,0,32,.32);
+      padding: 46px 20px;
+    }
+    .menu-btn-all {
+      background: linear-gradient(135deg, #343b47, #1a1f2b);
+      padding: 18px 18px;
+    }
+    .menu-btn-vote .menu-btn-title { font-size: 1.9em; font-weight: 800; }
+    .menu-btn-all .menu-btn-title { font-size: 1.05em; font-weight: 800; }
+    .menu-btn-sub { font-size: 0.85em; font-weight: 600; opacity: .85; margin-top: 10px; text-align: center; }
+
+    /* 메인(갤러리) */
     #mainScreen { display: none; max-width: 1200px; margin: 0 auto; }
-    .header-info {
-      display: flex; flex-direction: row; justify-content: space-between; align-items: center;
-      background: rgba(255,255,255,.82); backdrop-filter: saturate(180%) blur(14px);
-      padding: 18px 22px; border-radius: 16px; margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(20,25,40,.05); gap: 15px; border: 1px solid #eceef2;
+    .gallery-topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 16px;
     }
-    .header-title-wrapper { display: flex; flex-direction: column; gap: 5px; }
-    .header-title-wrapper h2 { font-size: 1.3em; color: #1a1f2b; font-weight: 800; }
-    #userInfoDisplay { color: #8b94a3; font-size: 0.88em; font-weight: 600; }
-    .btn-refresh {
-      background: #fff0f1; color: #e50020; border: none; padding: 11px 17px; border-radius: 11px;
-      font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all .2s ease;
+    .btn-back {
+      background: #e9ebf0; color: #5b6472; border: none; padding: 10px 14px; border-radius: 11px;
+      font-weight: 700; font-size: 0.82em; flex-shrink: 0;
     }
-    .btn-refresh:hover { background: #e50020; color: #fff; transform: translateY(-2px); }
-
-    /* 탭 세그먼트 */
-    .segment { display: flex; gap: 4px; background: #e9ebf0; border-radius: 15px; padding: 5px; max-width: 460px; margin: 0 auto 24px; }
-    .segment button { flex: 1; padding: 12px 10px; border-radius: 11px; background: transparent; color: #5b6472; font-size: 0.92em; font-weight: 700; }
-    .segment button.active { background: #fff; color: #e50020; box-shadow: 0 2px 10px rgba(20,25,40,.05); }
-
-    @media (max-width: 600px) {
-      .header-info { flex-direction: column; align-items: stretch; text-align: center; }
-      .btn-refresh { margin-top: 10px; width: 100%; padding: 12px; }
+    .btn-back:active { background: #d7dae2; }
+    .gallery-title {
+      flex: 1; text-align: center; font-size: 1em; font-weight: 800; color: #1a1f2b;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px;
     }
+    .btn-refresh { background: #fff0f1; color: #e50020; border: none; padding: 10px 14px; border-radius: 11px; font-weight: 700; font-size: 0.82em; flex-shrink: 0; }
+    .btn-refresh:active { background: #e50020; color: #fff; }
 
-    /* ================= 갤러리 ================= */
-    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px; }
+    /* 갤러리: 모바일 2열(한 화면에 4개 내외) / 넓은 화면은 자동 확장 */
+    .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (min-width: 600px) { .gallery { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; } }
     .card {
-      background: white; border-radius: 18px; border: 1px solid #eceef2; overflow: hidden;
+      background: white; border-radius: 14px; border: 1px solid #eceef2; overflow: hidden;
       box-shadow: 0 4px 15px rgba(20,25,40,.05); display: flex; flex-direction: column;
-      transition: transform .3s cubic-bezier(.22,.61,.36,1), box-shadow .3s cubic-bezier(.22,.61,.36,1);
-      animation: fadeUp .5s cubic-bezier(.22,.61,.36,1) both;
+      animation: fadeUp .4s cubic-bezier(.22,.61,.36,1) both;
     }
-    .card:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(20,25,40,.1); }
-
-    /* A4 세로 비율(1:1.414) 액자 — 배경/발 찍힌 사진 가장자리를 cover로 정돈 */
-    .card-frame {
-      position: relative; width: 100%; aspect-ratio: 1 / 1.414;
-      background-color: #f6f8fa; border-bottom: 1px solid #f1f5f9; overflow: hidden; cursor: zoom-in;
-    }
-    .card-frame img {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center; transition: transform .4s cubic-bezier(.22,.61,.36,1);
-    }
-    .card:hover .card-frame img { transform: scale(1.04); }
-    .pdf-tag {
-      position: absolute; top: 10px; left: 10px; z-index: 2;
-      background: rgba(26,31,43,.72); color: #fff; backdrop-filter: blur(4px);
-      font-size: 0.72em; font-weight: 700; padding: 5px 11px; border-radius: 30px;
-    }
+    .card-frame { position: relative; width: 100%; aspect-ratio: 1 / 1.414; background-color: #f6f8fa; border-bottom: 1px solid #f1f5f9; overflow: hidden; cursor: zoom-in; }
+    .card-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .pdf-tag { position: absolute; top: 6px; left: 6px; z-index: 2; background: rgba(26,31,43,.72); color: #fff; font-size: 0.62em; font-weight: 700; padding: 3px 8px; border-radius: 30px; }
     @supports not (aspect-ratio: 1 / 1) { .card-frame { height: 0; padding-bottom: 141.4%; } }
 
-    .card-body { padding: 18px; display: flex; flex-direction: column; flex-grow: 1; }
+    .card-body { padding: 8px; display: flex; flex-direction: column; flex-grow: 1; }
+    @media (min-width: 600px) { .card-body { padding: 14px; } }
 
-    /* 작품명 라벨 */
-    .art-label {
-      display: flex; border-radius: 14px; overflow: hidden; border: 1px solid #eceef2;
-      margin-bottom: 16px; box-shadow: 0 2px 6px rgba(20,25,40,.03); background: white;
-      width: 100%; align-items: stretch; min-height: 60px;
-    }
+    /* 작품명 라벨: 글자가 잘리지 않고 틀 안에 전부 들어가도록
+       - overflow:hidden 제거 (혹시라도 텍스트가 잘리는 일 방지)
+       - 높이는 min-height만 두고 내용에 따라 자유롭게 늘어남
+       - 글자 크기는 clamp()로 화면 폭에 맞춰 자동 조절 */
+    /* min-width:0 이 핵심: flex 아이템 기본값(min-width:auto)이 글자 폭만큼 박스를
+       억지로 늘려서 카드 밖으로 튀어나가게 만들던 버그를 해결한다. */
+    .art-label { display: flex; border-radius: 10px; border: 1px solid #eceef2; margin-bottom: 8px; background: white; width: 100%; align-items: stretch; min-height: 42px; overflow: hidden; }
     .art-label-title {
       background: linear-gradient(135deg, #fff0f1, #ffe4e6); color: #e50020; font-weight: 700;
-      padding: 10px 12px; font-size: 0.82em; display: flex; align-items: center; justify-content: center;
-      min-width: 58px; flex-shrink: 0;
+      padding: 6px 8px; font-size: clamp(0.6em, 2.2vw, 0.82em); display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; white-space: nowrap;
     }
     .art-label-content {
-      color: #1a1f2b; font-weight: 700; padding: 10px; font-size: 0.92em; flex-grow: 1;
-      text-align: center; display: flex; align-items: center; justify-content: center;
-      word-break: keep-all; overflow-wrap: break-word; line-height: 1.35;
+      color: #1a1f2b; font-weight: 700; padding: 6px 8px; font-size: clamp(0.6em, 2.3vw, 0.88em);
+      flex-grow: 1; min-width: 0; max-width: 100%; text-align: center; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; word-break: keep-all; overflow-wrap: break-word;
+      white-space: normal; line-height: 1.32;
     }
+    .art-name-sub { font-size: 0.92em; font-weight: 600; color: #5b6472; margin-top: 2px; }
 
     .vote-action-area { margin-top: auto; }
-    .vote-count-wrap {
-      display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px; margin-bottom: 12px;
-      background: #fff0f1; color: #e50020; border-radius: 30px; font-weight: 800; font-size: 0.95em; align-self: flex-start;
-    }
-    .btn-vote {
-      background: linear-gradient(135deg, #e50020, #c0001b); color: white; width: 100%; margin-bottom: 9px;
-      padding: 13px; border-radius: 12px; box-shadow: 0 6px 16px rgba(229,0,32,.26); font-weight: 800;
-    }
-    .btn-vote:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(229,0,32,.32); }
+    .vote-count-wrap { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; margin-bottom: 7px; background: #fff0f1; color: #e50020; border-radius: 30px; font-weight: 800; font-size: 0.76em; }
+    .btn-vote { background: linear-gradient(135deg, #e50020, #c0001b); color: white; width: 100%; margin-bottom: 6px; padding: 9px; border-radius: 10px; box-shadow: 0 6px 16px rgba(229,0,32,.26); font-weight: 800; font-size: 0.76em; }
     .btn-vote:disabled { background: #eef0f4; color: #94a3b8; box-shadow: none; cursor: not-allowed; }
     .btn-vote.voted-mine { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 6px 16px rgba(16,185,129,.3); }
-    .btn-comment-toggle {
-      background-color: white; color: #5b6472; border: 1.4px solid #eceef2; width: 100%;
-      padding: 11px; border-radius: 12px; font-weight: 700; font-size: 0.92em;
+    .btn-comment-toggle { background-color: white; color: #5b6472; border: 1.4px solid #eceef2; width: 100%; padding: 8px; border-radius: 10px; font-weight: 700; font-size: 0.72em; }
+    .btn-comment-toggle:active { border-color: #e50020; color: #e50020; background: #fff0f1; }
+    @media (min-width: 600px) {
+      .btn-vote { padding: 12px; font-size: 0.9em; }
+      .btn-comment-toggle { padding: 10px; font-size: 0.84em; }
+      .vote-count-wrap { padding: 5px 12px; font-size: 0.88em; }
     }
-    .btn-comment-toggle:hover { border-color: #e50020; color: #e50020; background: #fff0f1; }
 
     /* 댓글 모달 */
-    #commentModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(16,20,30,.55); backdrop-filter: blur(3px); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
-    .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 20px; display: flex; flex-direction: column; max-height: 85vh; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.25); animation: slideUp .32s cubic-bezier(.22,.61,.36,1); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; background: white; border-bottom: 1px solid #f1f5f9; }
-    .modal-header h3 { font-weight: 800; }
-    .modal-body { padding: 15px; overflow-y: auto; flex-grow: 1; background: #f4f5f8; }
-    .comment-item { background: white; padding: 13px 15px; margin-bottom: 10px; border-radius: 13px; border: 1px solid #eceef2; animation: fadeUp .3s cubic-bezier(.22,.61,.36,1); }
-    .comment-user { font-weight: 800; color: #e50020; font-size: 0.92em; }
-    .comment-time { font-size: 0.74em; color: #8b94a3; float: right; margin-top: 2px; }
-    .comment-text { margin-top: 6px; font-size: 0.93em; color: #2c333f; line-height: 1.5; word-break: break-word; }
-    .modal-footer { padding: 14px; background: white; border-top: 1px solid #f1f5f9; display: flex; gap: 10px; }
-    .modal-footer input { flex-grow: 1; margin: 0; padding: 12px 14px; background-color: #f6f7f9; border: 1.4px solid #eceef2; }
-    .modal-footer input:focus { background: #fff; border-color: #e50020; }
+    #commentModal { display: none; position: fixed; inset: 0; background: rgba(16,20,30,.55); backdrop-filter: blur(3px); z-index: 1000; justify-content: center; align-items: flex-end; padding: 0; }
+    @media (min-width: 600px) { #commentModal { align-items: center; padding: 15px; } }
+    .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; display: flex; flex-direction: column; max-height: 85vh; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.25); animation: slideUp .32s cubic-bezier(.22,.61,.36,1); }
+    @media (min-width: 600px) { .modal-content { border-radius: 20px; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px; border-bottom: 1px solid #f1f5f9; }
+    .modal-header h3 { font-weight: 800; font-size: 1.05em; }
+    .modal-body { padding: 14px; overflow-y: auto; flex-grow: 1; background: #f4f5f8; }
+    .comment-item { background: white; padding: 12px 14px; margin-bottom: 9px; border-radius: 12px; border: 1px solid #eceef2; }
+    .comment-user { font-weight: 800; color: #e50020; font-size: 0.9em; }
+    .comment-time { font-size: 0.72em; color: #8b94a3; float: right; margin-top: 2px; }
+    .comment-text { margin-top: 5px; font-size: 0.9em; color: #2c333f; line-height: 1.5; word-break: break-word; }
+    .modal-footer { padding: 12px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
+    .modal-footer input { flex-grow: 1; margin: 0; padding: 12px; background-color: #f6f7f9; border: 1.4px solid #eceef2; border-radius: 12px; font-size: 16px; }
 
-    #loadingOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.92); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 1.05em; font-weight: 700; color: #e50020; }
-    .spinner { width: 46px; height: 46px; border-radius: 50%; margin-bottom: 18px; border: 4px solid #fff0f1; border-top-color: #e50020; animation: spin .8s linear infinite; }
+    #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.92); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; font-size: 1em; font-weight: 700; color: #e50020; text-align: center; padding: 20px; }
+    .spinner { width: 46px; height: 46px; border-radius: 50%; margin-bottom: 16px; border: 4px solid #fff0f1; border-top-color: #e50020; animation: spin .8s linear infinite; }
 
     /* 라이트박스 */
-    #imageLightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(8,10,16,0.94); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; }
-    #lightboxImg { max-width: 94%; max-height: 82vh; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 2em; cursor: pointer; user-select: none; width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.12); backdrop-filter: blur(4px); transition: all .2s ease; }
-    .lightbox-nav:hover { background: #e50020; }
-    #prevBtn { left: 16px; }
-    #nextBtn { right: 16px; }
-    #closeLightbox { position: absolute; top: 18px; right: 18px; color: white; font-size: 1.6em; cursor: pointer; user-select: none; z-index: 2001; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.12); }
-    #lightboxTitle { color: white; font-size: 1.1em; margin-top: 16px; font-weight: 700; text-align: center; padding: 0 20px; }
-    .lightbox-open { position: absolute; bottom: 24px; background: rgba(255,255,255,.16); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 0.9em; font-weight: 700; text-decoration: none; backdrop-filter: blur(4px); }
-    .lightbox-open:hover { background: #e50020; }
+    #imageLightbox { display: none; position: fixed; inset: 0; background: rgba(8,10,16,0.94); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; }
+    #lightboxImg { max-width: 94%; max-height: 80vh; object-fit: contain; border-radius: 10px; }
+    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 1.8em; cursor: pointer; user-select: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.12); }
+    #prevBtn { left: 12px; } #nextBtn { right: 12px; }
+    #closeLightbox { position: absolute; top: 16px; right: 16px; color: white; font-size: 1.5em; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.12); z-index: 2001; }
+    #lightboxTitle { color: white; font-size: 1em; margin-top: 14px; font-weight: 700; text-align: center; padding: 0 20px; }
+    .lightbox-open { position: absolute; bottom: 20px; background: rgba(255,255,255,.16); color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 0.88em; font-weight: 700; text-decoration: none; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideUp { from { transform: translateY(40px); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
     @keyframes popIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
   </style>
@@ -173,58 +168,65 @@
 
   <div id="loadingOverlay">
     <div class="spinner"></div>
-    <div>데이터를 동기화 중입니다...<br><span style="font-size: 0.7em; color: #8b94a3; font-weight: 500;">(드라이브 이미지 및 작품을 읽어오는 중)</span></div>
+    <div>데이터를 동기화 중입니다...<br><span style="font-size: 0.7em; color: #8b94a3; font-weight: 500;">(작품을 읽어오는 중)</span></div>
   </div>
 
   <div id="loginScreen">
     <div class="login-hero">
       <h2>🎨 매장 그림 컨테스트 투표</h2>
-      <p>마음에 드는 작품에 소중한 한 표를 💝</p>
+      <p>소중한 한 표를 부탁드립니다.💝</p>
     </div>
     <div class="login-body">
-      <p style="color: #5b6472; font-size: 0.9em; margin: 0 0 16px;">참여를 위해 사번과 닉네임을 입력해주세요.<br>(1인 1회 투표)</p>
+      <p style="color:#5b6472; font-size:0.9em; margin:0 0 16px;">사번과 닉네임을 입력해주세요.<br>(1인 1회 투표를 위하여 사번을 수집합니다.)</p>
       <input type="text" id="empId" placeholder="사번 (예: AD1234567)">
       <input type="text" id="nickname" placeholder="사용할 닉네임" onkeypress="if(event.keyCode==13) login()">
       <button class="btn-primary" onclick="login()">입장하기</button>
     </div>
   </div>
 
+  <!-- 메뉴(첫 화면) -->
+  <div id="menuScreen">
+    <div id="menuUserInfo"></div>
+    <p class="menu-desc">
+      매장 직원분들의 소중한 작품입니다.^^<br>
+      작품을 클릭해 크게 보실 수 있습니다.
+    </p>
+    <button class="menu-btn menu-btn-vote" onclick="openGallery('round1')">
+      <div class="menu-btn-title">🎨 투표하기</div>
+      <div class="menu-btn-sub">(내부심사를 통하여 선정된 20개의 작품입니다.)</div>
+    </button>
+    <button class="menu-btn menu-btn-all" onclick="openGallery('all')">
+      <div class="menu-btn-title">🖼️ 전체 출품작 보기 (108개 작품)</div>
+    </button>
+  </div>
+
+  <!-- 갤러리 화면 -->
   <div id="mainScreen">
-    <div class="header-info">
-      <div class="header-title-wrapper">
-        <h2 id="mainTitle">🎨 안전보건팀 내부 1차 심사작 투표</h2>
-        <span id="userInfoDisplay"></span>
-      </div>
+    <div class="gallery-topbar">
+      <button class="btn-back" onclick="goToMenu()">◀ 메뉴로</button>
+      <div class="gallery-title" id="mainTitle">🎨 후보작 투표</div>
       <button class="btn-refresh" onclick="loadData()">🔄 새로고침</button>
     </div>
 
-    <div class="segment">
-      <button id="tab-round1" class="active" onclick="switchTab('round1')">⭐ 1차 심사작</button>
-      <button id="tab-all" onclick="switchTab('all')">🖼️ 전체 출품작</button>
-    </div>
-
     <div class="gallery" id="galleryContainer"></div>
-
-    <div id="bottomActionContainer" style="text-align: center; margin-top: 40px; margin-bottom: 30px;">
-    </div>
   </div>
 
   <!-- 댓글 모달 -->
   <div id="commentModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalTitle" style="font-size:1.1em;">작품 댓글</h3>
+        <h3 id="modalTitle">작품 댓글</h3>
         <span style="cursor:pointer; font-size:1.5em; color:#94a3b8;" onclick="closeModal()">&times;</span>
       </div>
       <div class="modal-body" id="modalCommentsList"></div>
       <div class="modal-footer">
         <input type="text" id="modalInput" placeholder="응원 한마디를 남겨주세요!" onkeypress="if(event.keyCode==13) postComment()">
-        <button class="btn-primary" style="width:70px; margin:0;" onclick="postComment()">등록</button>
+        <button class="btn-primary" style="width:64px; margin:0; padding:12px 0;" onclick="postComment()">등록</button>
       </div>
     </div>
   </div>
 
-  <!-- 사진 크게 보기 모달 -->
+  <!-- 라이트박스 -->
   <div id="imageLightbox">
     <span id="closeLightbox" onclick="closeImageModal()">&times;</span>
     <span class="lightbox-nav" id="prevBtn" onclick="changeImage(-1)">&#10094;</span>
@@ -235,6 +237,14 @@
   </div>
 
   <script>
+    /* =======================================================
+       ★ 배포 후 여기 한 줄만 실제 Apps Script API 주소로 교체 ★
+       (api/Code.gs 를 "웹 앱"으로 배포하고 받은 /exec 주소)
+       - 작품 목록/이미지는 GitHub(artworks.json, img/)에서 로드
+       - 투표/댓글 저장 + 집계만 이 API로 처리 (구글 시트 연동)
+       ======================================================= */
+    var API_URL = "https://script.google.com/macros/s/AKfycbxanP4hkjqR_BGB85PI4WiTGvk7GfDmeAFDFGowXmnCdgl05LUuiFExUju0iI64HDEk1A/exec";
+
     var currentUser = { empId: '', nickname: '' };
     var currentData = { candidates: { all: [], round1: [] }, voteCount: {}, voters: {}, comments: [] };
     var currentModalArtId = null;
@@ -246,120 +256,174 @@
       '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="424"><rect width="100%" height="100%" fill="#f2f4f7"/><text x="50%" y="50%" fill="#b4bcc8" font-family="sans-serif" font-size="15" text-anchor="middle" dy=".3em">이미지를 불러올 수 없어요</text></svg>'
     );
 
+    var PDF_PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="424"><rect width="100%" height="100%" fill="#fff0f1"/><text x="50%" y="46%" fill="#e50020" font-family="sans-serif" font-size="56" text-anchor="middle">📄</text><text x="50%" y="60%" fill="#e50020" font-family="sans-serif" font-size="17" font-weight="bold" text-anchor="middle">PDF 작품</text></svg>'
+    );
+
     function esc(s) {
       return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    /* ===== JSONP 호출 (CORS 회피) ===== */
+    var _jsonpSeq = 0;
+    function jsonp(params, onSuccess, onError) {
+      var cbName = '__cb_' + (_jsonpSeq++) + '_' + Date.now();
+      var timer = setTimeout(function () {
+        cleanup();
+        if (onError) onError('요청 시간이 초과되었습니다. 네트워크를 확인해주세요.');
+      }, 20000);
+
+      function cleanup() {
+        clearTimeout(timer);
+        delete window[cbName];
+        if (script && script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cbName] = function (data) {
+        cleanup();
+        onSuccess(data);
+      };
+
+      var qs = Object.keys(params).map(function (k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      }).join('&');
+
+      var script = document.createElement('script');
+      script.src = API_URL + '?callback=' + cbName + '&' + qs;
+      script.onerror = function () { cleanup(); if (onError) onError('서버에 연결할 수 없습니다.'); };
+      document.body.appendChild(script);
     }
 
     function login() {
       var id = document.getElementById('empId').value.trim();
       var nick = document.getElementById('nickname').value.trim();
-      if(!id || !nick) return alert("사번과 닉네임을 모두 입력해주세요.");
-
+      if (!id || !nick) return alert("사번과 닉네임을 모두 입력해주세요.");
       currentUser.empId = id;
       currentUser.nickname = nick;
       document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('menuUserInfo').innerText = nick + " (" + id + ") 님 환영합니다!";
+      document.getElementById('menuScreen').style.display = 'block';
+    }
+
+    function openGallery(tabId) {
+      currentTab = tabId;
+      document.getElementById('mainTitle').innerText = tabId === 'round1' ? '🎨 후보작 투표' : '🖼️ 전체 출품작 갤러리';
+      document.getElementById('menuScreen').style.display = 'none';
       document.getElementById('mainScreen').style.display = 'block';
-      document.getElementById('userInfoDisplay').innerText = nick + " (" + id + ") 님 환영합니다!";
+      window.scrollTo({ top: 0 });
       loadData();
+    }
+
+    function goToMenu() {
+      document.getElementById('mainScreen').style.display = 'none';
+      document.getElementById('menuScreen').style.display = 'block';
+      window.scrollTo({ top: 0 });
+    }
+
+    var _artworksCache = null;
+
+    // 작품 목록/이미지: 같은 저장소의 artworks.json + img/ 에서 로드 (드라이브 의존 없음, 사내망 OK)
+    function loadArtworks() {
+      if (_artworksCache) return Promise.resolve(_artworksCache);
+      return fetch('artworks.json', { cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('artworks.json 로드 실패 (' + r.status + ')');
+          return r.json();
+        })
+        .then(function (j) { _artworksCache = j; return j; });
+    }
+
+    // 투표수/투표자/댓글 집계: Apps Script API 에서 로드 (저장은 계속 구글 시트로)
+    function loadStats() {
+      return new Promise(function (resolve) {
+        jsonp({ action: 'stats' },
+          function (data) { resolve(data || {}); },
+          function () { resolve({ voteCount: {}, voters: {}, comments: [] }); }
+        );
+      });
     }
 
     function loadData() {
       showLoading(true);
-      google.script.run.withSuccessHandler(function(data) {
-        currentData = data;
-        renderGallery();
-        if(currentModalArtId) renderModalComments(currentModalArtId);
+      Promise.all([loadArtworks(), loadStats()]).then(function (arr) {
+        try {
+          var art = arr[0] || {}, stats = arr[1] || {};
+          currentData = {
+            candidates: { all: art.all || [], round1: art.round1 || [] },
+            voteCount: stats.voteCount || {},
+            voters: stats.voters || {},
+            comments: stats.comments || []
+          };
+          renderGallery();
+          if (currentModalArtId) renderModalComments(currentModalArtId);
+        } catch (e) {
+          alert("화면을 그리는 중 오류가 발생했습니다: " + e.message);
+        } finally {
+          showLoading(false);
+        }
+      }).catch(function (err) {
+        alert("데이터를 불러오는데 실패했습니다: " + (err && err.message ? err.message : err));
         showLoading(false);
-      }).withFailureHandler(function(e) {
-        alert("데이터를 불러오는데 실패했습니다: " + e);
-        showLoading(false);
-      }).getInitialData();
-    }
-
-    function switchTab(tabId) {
-      currentTab = tabId;
-      document.getElementById('tab-round1').classList.toggle('active', tabId === 'round1');
-      document.getElementById('tab-all').classList.toggle('active', tabId === 'all');
-      document.getElementById('mainTitle').innerText = tabId === 'round1' ? '🎨 안전보건팀 내부 1차 심사작 투표' : '🖼️ 전체 출품작 갤러리';
-      renderGallery();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     }
 
     function renderGallery() {
       var container = document.getElementById('galleryContainer');
-      var bottomContainer = document.getElementById('bottomActionContainer');
       container.innerHTML = '';
 
       var entries = currentData.candidates[currentTab] || [];
       currentGalleryEntries = entries;
       var hasVoted = currentData.voters[currentUser.empId] !== undefined;
 
-      if(entries.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 50px;">등록된 작품이 없습니다.</div>`;
+      if (entries.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#64748b; padding:50px;">등록된 작품이 없습니다.</div>';
       } else {
-        entries.forEach(function(art, index) {
-          var nameText = art.name ? ` (${esc(art.name)})` : "";
-          var labelDisplay = `${esc(art.title)}${nameText}`;
-          var pdfTag = art.isPdf ? `<div class="pdf-tag">📄 PDF</div>` : '';
+        entries.forEach(function (art, index) {
+          // 제목 1줄 + (이름) 1줄로 분리해서 깔끔하게 표시
+          var nameLine = art.name ? ('<span class="art-name-sub">(' + esc(art.name) + ')</span>') : "";
+          var labelDisplay = '<span>' + esc(art.title) + '</span>' + nameLine;
+          var pdfTag = art.isPdf ? '<div class="pdf-tag">📄 PDF</div>' : '';
 
-          var cardHTML = `
-            <div class="card" style="animation-delay:${index * 0.04}s">
-              <div class="card-frame" onclick="openImageModal(${index})">
-                ${pdfTag}
-                <img src="${esc(art.img)}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK">
-              </div>
-              <div class="card-body">
-                <div class="art-label">
-                  <div class="art-label-title">작품명</div>
-                  <div class="art-label-content">${labelDisplay}</div>
-                </div>
-          `;
+          var cardHTML = '' +
+            '<div class="card" style="animation-delay:' + (index * 0.03) + 's">' +
+              '<div class="card-frame" onclick="openImageModal(' + index + ')">' +
+                pdfTag +
+                '<img src="' + (art.img ? esc(art.img) : PDF_PLACEHOLDER) + '" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK">' +
+              '</div>' +
+              '<div class="card-body">' +
+                '<div class="art-label">' +
+                  '<div class="art-label-title">작품명</div>' +
+                  '<div class="art-label-content">' + labelDisplay + '</div>' +
+                '</div>';
 
           if (currentTab === 'round1') {
-              var votes = currentData.voteCount[art.id] || 0;
-              var commentCount = currentData.comments.filter(c => c.artId === art.id).length;
-              var btnHtml = "";
-
-              if (hasVoted) {
-                if (currentData.voters[currentUser.empId] === art.id) {
-                  btnHtml = `<button class="btn-vote voted-mine" disabled>✅ 내가 투표한 작품</button>`;
-                } else {
-                  btnHtml = `<button class="btn-vote" disabled>투표 완료 (1인 1회)</button>`;
-                }
+            var votes = currentData.voteCount[art.id] || 0;
+            var commentCount = currentData.comments.filter(function (c) { return c.artId === art.id; }).length;
+            var btnHtml = "";
+            if (hasVoted) {
+              if (currentData.voters[currentUser.empId] === art.id) {
+                btnHtml = '<button class="btn-vote voted-mine" disabled>✅ 내가 투표한 작품</button>';
               } else {
-                btnHtml = `<button class="btn-vote" onclick="castVote('${art.id}')">이 작품에 투표하기 👍</button>`;
+                btnHtml = '<button class="btn-vote" disabled>투표 완료 (1인 1회)</button>';
               }
-
-              cardHTML += `
-                <div class="vote-action-area">
-                  <div class="vote-count-wrap">❤️ ${votes}</div>
-                  ${btnHtml}
-                  <button class="btn-comment-toggle" onclick="openModal('${art.id}', '${esc(art.title).replace(/'/g, "\\'")}')">💬 응원댓글 (${commentCount})</button>
-                </div>
-              `;
+            } else {
+              btnHtml = '<button class="btn-vote" onclick="castVote(\'' + art.id + '\')">이 작품에 투표하기 👍</button>';
+            }
+            cardHTML += '' +
+              '<div class="vote-action-area">' +
+                '<div class="vote-count-wrap">❤️ ' + votes + '</div>' +
+                btnHtml +
+                '<button class="btn-comment-toggle" onclick="openModal(\'' + art.id + '\', \'' + esc(art.title).replace(/'/g, "\\'") + '\')">💬 응원댓글 (' + commentCount + ')</button>' +
+              '</div>';
           }
-
-          cardHTML += `
-              </div>
-            </div>
-          `;
+          cardHTML += '</div></div>';
           container.innerHTML += cardHTML;
         });
       }
-
-      if (currentTab === 'round1') {
-        bottomContainer.innerHTML = `<button class="btn-primary" style="background: linear-gradient(135deg, #343b47, #1a1f2b); max-width: 400px; padding: 15px; font-size: 1.05em; border-radius: 50px; box-shadow: 0 8px 20px rgba(20,25,40,0.15);" onclick="switchTab('all')">👇 전체 출품작 모두 보기</button>`;
-      } else {
-        bottomContainer.innerHTML = `<button class="btn-primary" style="max-width: 400px; padding: 15px; font-size: 1.05em; border-radius: 50px;" onclick="switchTab('round1')">👆 내부 심사작 투표로 돌아가기</button>`;
-      }
     }
 
-    /* ==== 사진 확대 및 스와이프 ==== */
-    function openImageModal(index) {
-      currentImageIndex = index;
-      updateImageModal();
-      document.getElementById('imageLightbox').style.display = 'flex';
-    }
+    /* 라이트박스 */
+    function openImageModal(index) { currentImageIndex = index; updateImageModal(); document.getElementById('imageLightbox').style.display = 'flex'; }
     function closeImageModal() { document.getElementById('imageLightbox').style.display = 'none'; }
     function changeImage(direction) {
       currentImageIndex += direction;
@@ -370,12 +434,11 @@
     function updateImageModal() {
       var art = currentGalleryEntries[currentImageIndex];
       if (!art) return;
-      var nameText = art.name ? ` (${art.name})` : "";
+      var nameText = art.name ? ' (' + art.name + ')' : "";
       var img = document.getElementById('lightboxImg');
-      img.src = art.img;
-      img.onerror = function(){ this.onerror=null; this.src=FALLBACK; };
-      document.getElementById('lightboxTitle').innerText = `${art.title}${nameText}`;
-      // PDF면 원본 열기 버튼 노출
+      img.src = art.img ? art.img : PDF_PLACEHOLDER;
+      img.onerror = function () { this.onerror = null; this.src = FALLBACK; };
+      document.getElementById('lightboxTitle').innerText = art.title + nameText;
       var openBtn = document.getElementById('lightboxOpen');
       if (art.isPdf && art.fileId) {
         openBtn.href = 'https://drive.google.com/file/d/' + art.fileId + '/view';
@@ -386,20 +449,19 @@
     }
 
     var touchStartX = 0, touchEndX = 0;
-    document.getElementById('imageLightbox').addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].screenX; }, {passive:true});
-    document.getElementById('imageLightbox').addEventListener('touchend', function(e){
+    document.getElementById('imageLightbox').addEventListener('touchstart', function (e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    document.getElementById('imageLightbox').addEventListener('touchend', function (e) {
       touchEndX = e.changedTouches[0].screenX;
       if (touchEndX < touchStartX - 50) changeImage(1);
       if (touchEndX > touchStartX + 50) changeImage(-1);
-    }, {passive:true});
+    }, { passive: true });
 
     function castVote(artId) {
-      if(!confirm("1인 1회 투표이며, 완료 후에는 변경할 수 없습니다.\n투표하시겠습니까?")) return;
+      if (!confirm("1인 1회 투표이며, 완료 후에는 변경할 수 없습니다.\n투표하시겠습니까?")) return;
       showLoading(true);
-      google.script.run.withSuccessHandler(function(res) {
-        alert(res.message);
-        loadData();
-      }).submitVote(currentUser.empId, currentUser.nickname, artId);
+      jsonp({ action: 'vote', empId: currentUser.empId, nickname: currentUser.nickname, artworkId: artId },
+        function (res) { alert(res.message); loadData(); },
+        function (err) { alert("투표 처리 실패: " + err); showLoading(false); });
     }
 
     function openModal(artId, title) {
@@ -412,29 +474,28 @@
 
     function renderModalComments(artId) {
       var listEl = document.getElementById('modalCommentsList');
-      var artComments = currentData.comments.filter(c => c.artId === artId);
-      if(artComments.length === 0) {
+      var artComments = currentData.comments.filter(function (c) { return c.artId === artId; });
+      if (artComments.length === 0) {
         listEl.innerHTML = "<div style='text-align:center; color:#94a3b8; margin-top:30px;'>가장 먼저 댓글을 남겨보세요! ✨</div>";
         return;
       }
-      listEl.innerHTML = artComments.map(c => `
-        <div class="comment-item">
-          <div><span class="comment-user">${esc(c.nickname)}</span><span class="comment-time">${esc(c.time)}</span></div>
-          <div class="comment-text">${esc(c.text)}</div>
-        </div>
-      `).join('');
+      listEl.innerHTML = artComments.map(function (c) {
+        return '<div class="comment-item"><div><span class="comment-user">' + esc(c.nickname) + '</span><span class="comment-time">' + esc(c.time) + '</span></div><div class="comment-text">' + esc(c.text) + '</div></div>';
+      }).join('');
       listEl.scrollTop = listEl.scrollHeight;
     }
 
     function postComment() {
       var inputEl = document.getElementById('modalInput');
       var text = inputEl.value.trim();
-      if(!text) return alert("댓글 내용을 입력해주세요.");
+      if (!text) return alert("댓글 내용을 입력해주세요.");
       showLoading(true);
-      google.script.run.withSuccessHandler(function(res) {
-        if(res.success) { inputEl.value = ''; loadData(); }
-        else { alert(res.message); showLoading(false); }
-      }).submitComment(currentUser.empId, currentUser.nickname, currentModalArtId, text);
+      jsonp({ action: 'comment', empId: currentUser.empId, nickname: currentUser.nickname, artworkId: currentModalArtId, text: text },
+        function (res) {
+          if (res.success) { inputEl.value = ''; loadData(); }
+          else { alert(res.message || '댓글 등록 실패'); showLoading(false); }
+        },
+        function (err) { alert("댓글 처리 실패: " + err); showLoading(false); });
     }
 
     function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
