@@ -25,6 +25,14 @@
       "fileId": "AD6146282"
     },
     {
+      "id": "r1_AD6146977",
+      "title": "나의 하루, 행복을 전하다.",
+      "name": "이OO",
+      "isPdf": false,
+      "img": "img/r1_AD6146977.jpg",
+      "fileId": "AD6146977"
+    },
+    {
       "id": "r1_AD6121301",
       "title": "나의 하루를 위로하는 정원",
       "name": "윤OO",
@@ -39,14 +47,6 @@
       "isPdf": false,
       "img": "img/r1_AD6070287.jpg",
       "fileId": "AD6070287"
-    },
-    {
-      "id": "r1_AD6146977",
-      "title": "다이소 매장 그림 컨테스트_ 나의 하루, 행복을 전하다.",
-      "name": "이OO",
-      "isPdf": false,
-      "img": "img/r1_AD6146977.jpg",
-      "fileId": "AD6146977"
     },
     {
       "id": "r1_AD6160440",
@@ -212,7 +212,7 @@
     },
     {
       "id": "all_AD6132523",
-      "title": "국민가게에서 일하는 _자부심“",
+      "title": "국민가게에서 일하는 자부심",
       "name": "서OO",
       "isPdf": false,
       "img": "img/all_AD6132523.jpg",
@@ -292,7 +292,7 @@
     },
     {
       "id": "all_AD6078361",
-      "title": "나의 꿈과 미래 긜고 다이소",
+      "title": "나의 꿈과 미래 그리고 다이소",
       "name": "조OO",
       "isPdf": false,
       "img": "img/all_AD6078361.jpg",
@@ -324,7 +324,7 @@
     },
     {
       "id": "all_AD6150768",
-      "title": "나의 일터 _ 내가 가장 많은 시간을 보내는 곳",
+      "title": "나의 일터 내가 가장 많은 시간을 보내는 곳",
       "name": "공OO",
       "isPdf": false,
       "img": "img/all_AD6150768.jpg",
@@ -460,7 +460,7 @@
     },
     {
       "id": "all_AD6150525",
-      "title": "다이소는내삶의동반자",
+      "title": "다이소는 내삶의 동반자",
       "name": "이OO",
       "isPdf": false,
       "img": "img/all_AD6150525.jpg",
@@ -500,7 +500,7 @@
     },
     {
       "id": "all_AD6158437",
-      "title": "다이소에서 나의포지션 _주방을 사랑하는 나_",
+      "title": "다이소에서 나의포지션 주방을 사랑하는 나_",
       "name": "이OO",
       "isPdf": false,
       "img": "img/all_AD6158437.jpg",
@@ -540,7 +540,7 @@
     },
     {
       "id": "all_AD6000950",
-      "title": "다이소와함께한청춘",
+      "title": "다이소와 함께한 청춘",
       "name": "홍OO",
       "isPdf": false,
       "img": "img/all_AD6000950.jpg",
@@ -676,7 +676,7 @@
     },
     {
       "id": "all_AD6103815",
-      "title": "신나게일하자",
+      "title": "신나게 일하자",
       "name": "조OO",
       "isPdf": false,
       "img": "img/all_AD6103815.jpg",
@@ -708,7 +708,7 @@
     },
     {
       "id": "all_AD6161810",
-      "title": "어떤역할의 _나_든 멋진 _나_가 되기",
+      "title": "어떤역할의 나든 멋진 나가 되기",
       "name": "권OO",
       "isPdf": false,
       "img": "img/all_AD6161810.jpg",
@@ -1012,7 +1012,7 @@
     },
     {
       "id": "all_AD6149485",
-      "title": "MBTI갈아끼우기",
+      "title": "MBTI 갈아끼우기",
       "name": "김OO",
       "isPdf": false,
       "img": "img/all_AD6149485.jpg",
