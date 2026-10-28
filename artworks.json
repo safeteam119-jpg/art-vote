@@ -443,6 +443,14 @@
       "fileId": "AD6048312"
     },
     {
+      "id": "all_AD6156525",
+      "title": "다이소 슈퍼맨",
+      "name": "홍OO",
+      "isPdf": false,
+      "img": "img/all_AD6156525.jpg",
+      "fileId": "AD6156525"
+    },
+    {
       "id": "all_AD6147075",
       "title": "다이소 진열왕",
       "name": "이OO",
@@ -481,14 +489,6 @@
       "isPdf": false,
       "img": "img/all_AD6120667.jpg",
       "fileId": "AD6120667"
-    },
-    {
-      "id": "all_AD6156525",
-      "title": "다이소슈퍼맨",
-      "name": "홍OO",
-      "isPdf": false,
-      "img": "img/all_AD6156525.jpg",
-      "fileId": "AD6156525"
     },
     {
       "id": "all_AD6162563",
@@ -612,7 +612,7 @@
     },
     {
       "id": "all_AD6156783",
-      "title": "빙글빙글돌아가는 다이소일상",
+      "title": "빙글빙글 돌아가는 다이소일상",
       "name": "이OO",
       "isPdf": false,
       "img": "img/all_AD6156783.jpg",
@@ -980,7 +980,7 @@
     },
     {
       "id": "all_AD6131714",
-      "title": "행복한 다이소 생활 _ 나의 카테고리",
+      "title": "행복한 다이소 생활 나의 카테고리",
       "name": "박OO",
       "isPdf": false,
       "img": "img/all_AD6131714.jpg",
